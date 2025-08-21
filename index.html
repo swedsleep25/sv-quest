@@ -2156,53 +2156,6 @@ COMMENT MODIFIER :
         reader.readAsDataURL(blob);
       });
     }
-
-    // CLICK HANDLER: build PDF and send to Codicent
-    document.getElementById("sendToCodicentBtn")?.addEventListener('click', async () => {
-      const statusDiv = document.getElementById('codicentStatus');
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const token = params.get('token') || localStorage.getItem('access_token');
-        if (!token) {
-          statusDiv.style.color = 'red';
-          statusDiv.textContent = 'No ?token=… parameter found in the URL.';
-          statusDiv.style.display = 'block';
-          setTimeout(() => statusDiv.style.display = 'none', 6000);
-          return;
-        }
-
-        // Prepare form content (same format as PDF)
-        let formContent = "Code: " + userCode + "\n\n";
-        questions.forEach((q, i) => {
-          formContent += `${i + 1}. ${q.text}\nSvar: ${answers[i] || ''}\n\n`;
-        });
-
-        // Add global comment if present
-        const globalComment = document.getElementById('globalComment').value.trim();
-        if (globalComment) {
-          formContent += `Kommentarer: ${globalComment}\n`;
-        }
-
-        // Send message to Codicent
-        const messageContent = `@swedsleep_demo #profile ${formContent}`;
-
-        window.Codicent.init({ token, maxConnectionAttempts: 3 });
-        const messageId = await window.Codicent.postMessage({
-          message: messageContent
-        });
-
-        statusDiv.style.color = 'green';
-        statusDiv.textContent = 'PDF sent to Codicent! ID: ' + messageId;
-        statusDiv.style.display = 'block';
-        setTimeout(() => statusDiv.style.display = 'none', 8000);
-
-      } catch (e) {
-        statusDiv.style.color = 'red';
-        statusDiv.textContent = 'Error sending to Codicent: ' + (e?.message || e);
-        statusDiv.style.display = 'block';
-        setTimeout(() => statusDiv.style.display = 'none', 8000);
-      }
-    });
   </script>
 </body>
 
